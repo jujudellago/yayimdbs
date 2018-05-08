@@ -96,7 +96,21 @@ class YayImdbs
       end
       info_hash[:video_type] = video_type_from_meta(doc)
       
-      info_hash[:plot] = doc.xpath("//td[@id='overview-top']/p[2]").inner_text.strip
+      #info_hash[:plot] = doc.xpath("//td[@id='overview-top']/p[2]").inner_text.strip
+      info_hash[:plot] = doc.at_css('.plot_summary .summary_text').inner_text.strip
+      #info_hash[:awards] = doc.at_css('#titleAwardsRanks .awards').inner_text.strip
+      awards_array=doc.css('#titleAwardsRanks span')
+      unless awards_array.nil?
+        if awards_array[0] && awards_array[0].inner_text
+         awards=awards_array[0].inner_text.strip
+         unless awards_array[1].nil?
+           awards<<" #{awards_array[1].inner_text.strip}"
+         end
+         info_hash[:awards]=awards
+       end
+      end
+      
+      
      # info_hash[:rating] = doc.at_css('.star-box-giga-star').inner_text.gsub(/[^0-9.]/, '').to_f rescue nil
      info_hash[:rating] = doc.at_css('.imdbRatingPlugin .rating').inner_text.gsub(/[^0-9.]/, '').to_f rescue nil
      
